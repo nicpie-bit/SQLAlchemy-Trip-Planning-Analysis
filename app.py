@@ -42,8 +42,11 @@ def home():
 @app.route("/api/v1.0/precipitation")
 def precipitation():
     ""Let's look into the precipitation data.""
-    precip_results = session.query(Measurement.prcp, ).all()
+    precip_results = session.query(Measurement.date, Measurement.prcp).all()
+    return jsonify(precip_results)
 
-
-
+@app.route("/api/v1.0/stations")
+def station():
+    stat_results + session.query(Station.station, Station.name).all()
+    return jsonify(stat_results)
 
