@@ -26,6 +26,9 @@ session = Session(engine)
 # Flask Setup
 app = Flask(__name__)
 
+#12 month earlier
+year_earlier_date = '2016-08-23'
+
 #Flask Routes
 @app.route("/")
 def home():
@@ -42,11 +45,11 @@ def home():
 @app.route("/api/v1.0/precipitation")
 def precipitation():
     ""Let's look into the precipitation data.""
-    precip_results = session.query(Measurement.date, Measurement.prcp).all()
+    precip_results = session.query(Measurement.date, Measurement.prcp).filter(Measurement.date >= year_earlier_date).group_by(Measurement.date).all()
     return jsonify(precip_results)
 
 @app.route("/api/v1.0/stations")
 def station():
-    stat_results + session.query(Station.station, Station.name).all()
+    stat_results = session.query(Station.station, Station.name).all()
     return jsonify(stat_results)
 
