@@ -29,6 +29,9 @@ app = Flask(__name__)
 #12 month earlier
 year_earlier_date = '2016-08-23'
 
+#Most active station
+most_active_stid = 'USC00519281'
+
 #Flask Routes
 @app.route("/")
 def home():
@@ -44,12 +47,22 @@ def home():
 
 @app.route("/api/v1.0/precipitation")
 def precipitation():
-    ""Let's look into the precipitation data.""
+    """Lets look into the precipitation data."""
+    #Query last 12 months prcp data
     precip_results = session.query(Measurement.date, Measurement.prcp).filter(Measurement.date >= year_earlier_date).group_by(Measurement.date).all()
-    return jsonify(precip_results)
+    for date, prcp in precip_results:
+        prcp_dict = {}
+        prcp_dict["date"] = date
+        prcp_dict["prcp"] = prcp
+
+    return jsonify(prcp_dict)
 
 @app.route("/api/v1.0/stations")
 def station():
     stat_results = session.query(Station.station, Station.name).all()
     return jsonify(stat_results)
 
+@app.route("/api/v1.0/tobs")
+def tobs():
+    tobs_results = session.query(Measurement.date, Measurement.tobs).filter(Measurement.date >= year_earlier_date).filter(Measurement.station == most_active_stid).all()
+    return jsonify(tobs_results) 
