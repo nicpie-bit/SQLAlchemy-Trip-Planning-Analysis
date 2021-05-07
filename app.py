@@ -69,13 +69,7 @@ def station():
 @app.route("/api/v1.0/tobs")
 def tobs():
     tobs_results = session.query(Measurement.date, Measurement.tobs).filter(Measurement.date >= year_earlier_date).filter(Measurement.station == most_active_stid).order_by(Measurement.tobs).all()
-    tobs_data = []
-    for date, tobs in tobs_results:
-        tobs_dict = {}
-        tobs_dict["date"] = date
-        tobs_dict["tobs"] = tobs
-        tobs_data.append(tobs_dict)
-    return jsonify(tobs_data) 
+    return jsonify(tobs_results) 
 
 @app.route("/api/v1.0/<start>")
 def start_date(start):
