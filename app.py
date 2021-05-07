@@ -82,7 +82,10 @@ def start_date(start):
     temp1_results = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).filter(Measurement.date >= start).all()
     return jsonify(temp1_results)
 
-
+@app.route("/api/v1.0/<start>/<end>")
+def startend_date(start,end):
+    temp2_results = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).filter(Measurement.date >= start).filter(Measurement.date <= end).all()
+    return jsonify(temp2_results)
 
 if __name__ == "__main__":
     app.run(debug=True)
