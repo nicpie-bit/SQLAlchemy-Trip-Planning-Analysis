@@ -11,12 +11,12 @@ from flask import Flask, jsonify
 
 
 # Database Setup
-engine = create_engine("sqlite:///../Resoucres/hawaii.sqlite", echo=False)
+engine = create_engine("sqlite:///../Resoucres/hawaii.sqlite", connect_args={'check_same_thread': False},echo=False)
 
 # reflect an existing database into a new model
 Base = automap_base()
 # reflect the tables
-Base.prepare(engine)
+Base.prepare(engine, reflect=True)
 
 # Save reference to the table
 Measurement = Base.classes.measurement
@@ -52,29 +52,37 @@ def precipitation():
     """Lets look into the precipitation data."""
     #Query last 12 months prcp data
     precip_results = session.query(Measurement.date, Measurement.prcp).filter(Measurement.date >= year_earlier_date).group_by(Measurement.date).all()
-    prcp_dict = []
+    prcp_data = []
     for date, prcp in precip_results:
-        prcp_data = {}
-        prcp_data["date"] = date
-        prcp_data["prcp"] = prcp
-        prcp_dict.append(prcp_data)
-    return jsonify(prcp_dict)
+        prcp_dict = {}
+        prcp_dict["date"] = date
+        prcp_dict["prcp"] = prcp
+        prcp_data.append(prcp_dict)
+    return jsonify(prcp_data)
 
 @app.route("/api/v1.0/stations")
 def station():
     stat_results = session.query(Station.station, Station.name).all()
+    stat_data = pd.read_sql(stat_results.statement, stat_results.session.bind)
     return jsonify(stat_results)
 
 @app.route("/api/v1.0/tobs")
 def tobs():
     tobs_results = session.query(Measurement.date, Measurement.tobs).filter(Measurement.date >= year_earlier_date).filter(Measurement.station == most_active_stid).order_by(Measurement.tobs).all()
-    tobs_dict = []
+    tobs_data = []
     for date, tobs in tobs_results:
-        tobs_data = {}
-        tobs_data["date"] = date
-        tobs_data["tobs"] = tobs
-        tobs_dict.append(tobs_data)
-    return jsonify(tobs_dict) 
+        tobs_dict = {}
+        tobs_dict["date"] = date
+        tobs_dict["tobs"] = tobs
+        tobs_data.append(tobs_dict)
+    return jsonify(tobs_data) 
+
+@app.route("/api/v1.0/<start>")
+def start_date(start):
+    temp1_results = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).filter(Measurement.date >= start).all()
+    return jsonify(temp1_results)
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
