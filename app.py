@@ -86,5 +86,7 @@ def startend_date(start,end):
     session.close()
     return jsonify(temp2_results)
 
+session.close()
+
 if __name__ == "__main__":
     app.run(debug=True)
