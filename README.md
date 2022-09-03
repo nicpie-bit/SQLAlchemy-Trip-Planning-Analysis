@@ -1,4 +1,4 @@
-# SQLAlchemy Homework - Surfs Up!
+# SQLAlchemy - Surfs Up!
 HW 10
 
 I've decided to treat myself to a long holiday vacation in Honolulu, Hawaii! To help with my trip planning, I need to do some climate analysis on the area. The following outlines what I need to do.
